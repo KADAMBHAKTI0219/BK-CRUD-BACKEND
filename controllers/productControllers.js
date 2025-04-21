@@ -73,8 +73,7 @@ const createProductData = async (req, res) => {
 // Get all products
 const getProductData = async (req, res) => {
   try {
-    const data = await ProductDataModel.find({})
-      .select('title price description category image')
+    const data = await ProductDataModel.find()
       .limit(100)
       .lean();
     console.log('Retrieved products:', data.length);
