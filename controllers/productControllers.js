@@ -75,7 +75,7 @@ const createProductData = async (req, res) => {
 // Get all products
 const getProductData = async (req, res) => {
     try {
-      const data = await ProductDataModel.find({}).lean();
+      const data = await ProductDataModel.find().lean();
       console.log('Retrieved products:', data.length);
       return res.status(200).json({ message: 'Products retrieved successfully', data });
     } catch (error) {
