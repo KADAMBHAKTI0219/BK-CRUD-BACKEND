@@ -1,40 +1,7 @@
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const { ProductDataModel } = require('../models/productModel');
-
-// Ensure uploads folder exists (use lowercase for consistency)
-const uploadDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Configure Multer for image upload
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
-// File filter for images only
-const fileFilter = (req, file, cb) => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-    if (allowedTypes.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
-        cb(new Error('Only JPEG, PNG, and GIF files are allowed'), false);
-    }
-};
-
-const upload = multer({
-    storage,
-    fileFilter,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
-}).single('image'); // Expect single file with field name 'image'
+const fs = require('fs');
+const path = require('path');
+const upload = require('../middleware/multerMiddleware'); // Import Multer middleware
 
 // Create product
 const createProductData = async (req, res) => {
@@ -64,7 +31,7 @@ const createProductData = async (req, res) => {
         } catch (error) {
             // Clean up uploaded file if database operation fails
             if (req.file) {
-                fs.unlinkSync(path.join(uploadDir, req.file.filename));
+                fs.unlinkSync(path.join(__dirname, '../Uploads', req.file.filename));
             }
             console.error('Database error:', error);
             return res.status(500).json({ message: `Failed to create product: ${error.message}` });
@@ -76,7 +43,6 @@ const createProductData = async (req, res) => {
 const getProductData = async (req, res) => {
     try {
         const data = await ProductDataModel.find();
-        console.log(data)
         return res.status(200).json({ message: 'Products retrieved successfully', data });
     } catch (error) {
         console.error('Database error:', error);
@@ -84,6 +50,7 @@ const getProductData = async (req, res) => {
     }
 };
 
+// Update product
 const updateProductData = async (req, res) => {
     upload(req, res, async (err) => {
         if (err instanceof multer.MulterError) {
@@ -96,7 +63,7 @@ const updateProductData = async (req, res) => {
         const id = req.params.id;
 
         if (!title || !price || !description || !category) {
-            return res.status(400).json({ message: "Please fill all required fields" });
+            return res.status(400).json({ message: 'Please fill all required fields' });
         }
 
         try {
@@ -107,16 +74,16 @@ const updateProductData = async (req, res) => {
             const updated = await ProductDataModel.findByIdAndUpdate(id, updateData, { new: true });
             if (!updated) {
                 if (req.file) {
-                    fs.unlinkSync(path.join(uploadDir, req.file.filename));
+                    fs.unlinkSync(path.join(__dirname, '../Uploads', req.file.filename));
                 }
-                return res.status(404).json({ message: "Product not found" });
+                return res.status(404).json({ message: 'Product not found' });
             }
-            return res.status(200).json({ message: "Product data updated successfully", data: updated }); // Ensure data is returned
+            return res.status(200).json({ message: 'Product data updated successfully', data: updated });
         } catch (error) {
             if (req.file) {
-                fs.unlinkSync(path.join(uploadDir, req.file.filename));
+                fs.unlinkSync(path.join(__dirname, '../Uploads', req.file.filename));
             }
-            console.error("Database error:", error);
+            console.error('Database error:', error);
             return res.status(500).json({ message: `Failed to update product: ${error.message}` });
         }
     });
