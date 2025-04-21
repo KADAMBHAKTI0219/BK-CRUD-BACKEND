@@ -25,7 +25,7 @@ app.use(cors({
 }));
 
 // Serve static files
-app.use('/uploads', express.static(path.join(__dirname, 'Uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/product', ProductRouter);
@@ -33,12 +33,11 @@ app.use('/product', ProductRouter);
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
-    try {
-      const connection = await connectToDB();
-      console.log('Connection state:', connection.readyState); // 1 = connected, 0 = disconnected
-      console.log(`Server is running on port ${PORT}`);
-    } catch (error) {
-      console.error('Failed to start server:', error);
-      process.exit(1);
-    }
-  });
+  try {
+    await connectToDB(); // Connect to MongoDB
+    console.log(`Server is running on port ${PORT}`);
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1); // Exit on failure
+  }
+});

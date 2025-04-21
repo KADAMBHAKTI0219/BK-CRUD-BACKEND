@@ -11,9 +11,6 @@ const productSchema = mongoose.Schema({
   },
 });
 
-// Add indexes
-productSchema.index({ title: 1 });
-productSchema.index({ category: 1 });
 
 const ProductDataModel = mongoose.model('Products', productSchema);
 

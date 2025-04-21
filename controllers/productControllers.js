@@ -72,23 +72,17 @@ const createProductData = async (req, res) => {
 
 // Get all products
 const getProductData = async (req, res) => {
-    try {
-      const data = await ProductDataModel.find({})
-        .select('title price description category image') // Fetch only needed fields
-        .limit(100)
-        .lean()
-        .maxTimeMS(30000); // Allow 30 seconds for query execution
-      console.log('Retrieved products:', data.length);
-      return res.status(200).json({ message: 'Products retrieved successfully', data });
-    } catch (error) {
-      console.error('Database error:', {
-        message: error.message,
-        name: error.name,
-        stack: error.stack,
-      });
-      return res.status(500).json({ message: `Failed to retrieve products: ${error.message}` });
-    }
-  };
+  try {
+    const data = await ProductDataModel.find()
+      .limit(100)
+      .lean();
+    console.log('Retrieved products:', data.length);
+    return res.status(200).json({ message: 'Products retrieved successfully', data });
+  } catch (error) {
+    console.error('Database error:', error);
+    return res.status(500).json({ message: `Failed to retrieve products: ${error.message}` });
+  }
+};
 
 // Update product
 const updateProductData = async (req, res) => {
