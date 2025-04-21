@@ -4,6 +4,7 @@ const dotenv= require('dotenv');
 const path = require('path');
 const ProductRouter = require('./routes/productRoutes');
 const connectDB = require('./config/db');
+const connectionToDB = require('./config/db');
 dotenv.config()
 const app = express()
 app.use(express.json());
@@ -17,7 +18,7 @@ app.use('/product',ProductRouter)
 
 app.listen(process.env.PORT || 3000,async()=>{
     try {
-        await connectDB();
+        await connectionToDB;
         console.log(`Server is running on Port ${process.env.PORT || 3000}`);
     } catch (error) {
         console.log(error)
