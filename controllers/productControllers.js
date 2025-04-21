@@ -1,7 +1,7 @@
 const { ProductDataModel } = require('../models/productModel');
 const fs = require('fs');
 const path = require('path');
-const upload = require('../middleware/multerMiddleware'); // Import Multer middleware
+const upload = require('../middleware/multerMiddleware')
 
 // Create product
 const createProductData = async (req, res) => {
@@ -41,13 +41,13 @@ const createProductData = async (req, res) => {
 
 // Get all products
 const getProductData = async (req, res) => {
-  try { 
-    const data = await ProductDataModel.find().lean();
-    return res.status(200).json({ message: 'Products retrieved successfully', data });
-  } catch (error) {
-    console.error('Database error:', error);
-    return res.status(500).json({ message: `Failed to retrieve products: ${error.message}` });
-  }
+    try {
+        const data = await ProductDataModel.find();
+        return res.status(200).json({ message: 'Products retrieved successfully', data });
+    } catch (error) {
+        console.error('Database error:', error);
+        return res.status(500).json({ message: `Failed to retrieve products: ${error.message}` });
+    }
 };
 
 // Update product
