@@ -3,10 +3,10 @@ const { createProductData, getProductData, updateProductData, deleteProductData,
 const router = express.Router();
 
 
-router.post('/products', createProductData);
-router.get('/products', getProductData);
-router.put('/products/:id', updateProductData);
-router.delete('/products/:id', deleteProductData);
-router.get('/products/:id', getSingleData);
+router.post('/create', createProductData);
+router.get('/get', getProductData);
+router.put('/update/:id', updateProductData);
+router.delete('/delete/:id', deleteProductData);
+router.get('/get/:id', getSingleData);
 
 module.exports = router;
