@@ -1,25 +1,26 @@
 const express = require('express');
-const cors = require('cors');
-const dotenv= require('dotenv');
-const ProductRouter = require('./routes/productRoutes');
+const connectDB = require('./db');
+const productRoutes = require('./routes/productRoutes');
 const path = require('path');
-const connectDB = require('./config/db');
-dotenv.config()
-const app = express()
-app.use(express.json());
-app.use(cors({
-    origin:  ["http://localhost:5173","http://localhost:5174","http://localhost:5175","http://localhost:3000","http://localhost:3001","http://localhost:3002"],   
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credential:true
-}))
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/product',ProductRouter)
 
-app.listen(process.env.PORT || 3000,async()=>{
-    try {
-        await connectDB();
-        console.log(`Server is running on Port ${process.env.PORT || 3000}`);
-    } catch (error) {
-        console.log(error)
-    }
-})
+const app = express();
+
+app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Await connection before setting up routes
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.use('/product', productRoutes);
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server due to database connection error:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
