@@ -1,7 +1,7 @@
 const { ProductDataModel } = require('../models/productModel');
 const fs = require('fs');
 const path = require('path');
-const upload = require('../middleware/multerMiddleware')
+const upload = require('../middleware/multerMiddleware');
 
 // Create product
 const createProductData = async (req, res) => {
