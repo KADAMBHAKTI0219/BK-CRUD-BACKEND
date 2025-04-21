@@ -13,13 +13,19 @@ app.use(cors({
     credential:true
 }))
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/product',ProductRouter)
 
-app.listen(process.env.PORT || 3000,async()=>{
+const startServer = async () => {
     try {
-        await connectDB();
-        console.log(`Server is running on Port ${process.env.PORT || 3000}`);
+      await connectDB(); // Ensure DB connection
+      app.use('/product', ProductRouter); // Register routes after connection
+      const PORT = process.env.PORT || 3000;
+      app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+      });
     } catch (error) {
-        console.log(error)
+      console.error('Failed to start server due to database connection error:', error);
+      process.exit(1); // Exit with failure
     }
-})
+  };
+  
+  startServer();
